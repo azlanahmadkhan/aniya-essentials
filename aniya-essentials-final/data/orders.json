@@ -1,0 +1,230 @@
+[
+  {
+    "orderId": "AE-9241",
+    "timestamp": "2026-11-10T12:02:06.099Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Bilal Tariq",
+      "phone": "0313 5074177",
+      "email": "bilal@example.com",
+      "address": "House 12, Gulberg III, Lahore"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "size": "200 ml",
+        "price": 1200,
+        "quantity": 1
+      }
+    ],
+    "subtotal": 1200,
+    "shipping": 200,
+    "total": 1400,
+    "channel": "email",
+    "emailResult": {
+      "success": true,
+      "status": "sent_via_formsubmit"
+    },
+    "whatsappResult": {
+      "success": true,
+      "status": "logged_ready_for_gateway"
+    }
+  },
+  {
+    "orderId": "AE-1224",
+    "timestamp": "2026-11-10T06:56:15.202Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Azlan Ahmad khan",
+      "phone": "03135074177",
+      "email": "ahmadazlankhan@gmail.com",
+      "address": "Mohalla Badam Bagicha Thana Malakand Khyber Pukhtoon Khwa"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "subtitle": "200 ml",
+        "price": 1200,
+        "quantity": 1,
+        "size": "200 ml",
+        "type": "oil"
+      }
+    ],
+    "subtotal": 1200,
+    "shipping": 200,
+    "total": 1400,
+    "channel": "email",
+    "emailResult": {
+      "success": true,
+      "status": "logged_ready_for_credentials"
+    },
+    "whatsappResult": {
+      "success": true,
+      "status": "logged_ready_for_gateway"
+    }
+  },
+  {
+    "orderId": "AE-9196",
+    "timestamp": "2026-11-10T06:37:20.634Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Azlan Ahmad khan",
+      "phone": "03135074177",
+      "email": "ahmadazlankhan@gmail.com",
+      "address": "Mohalla Badam Bagicha Thana Malakand Khyber Pukhtoon Khwa"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "subtitle": "200 ml",
+        "price": 1200,
+        "quantity": 1,
+        "size": "200 ml",
+        "type": "oil"
+      }
+    ],
+    "subtotal": 1200,
+    "shipping": 200,
+    "total": 1400,
+    "channel": "both",
+    "emailResult": {
+      "success": true,
+      "status": "logged_ready_for_credentials"
+    },
+    "whatsappResult": {
+      "success": true,
+      "status": "logged_ready_for_gateway"
+    }
+  },
+  {
+    "orderId": "AE-5165",
+    "timestamp": "2026-11-10T06:20:46.470Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Azlan Ahmad khan",
+      "phone": "03135074177",
+      "email": "ahmadazlankhan@gmail.com",
+      "address": "Mohalla Badam Bagicha Thana Malakand Khyber Pukhtoon Khwa"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "subtitle": "200 ml",
+        "price": 1200,
+        "quantity": 1,
+        "size": "200 ml",
+        "type": "oil"
+      }
+    ],
+    "subtotal": 1200,
+    "shipping": 200,
+    "total": 1400,
+    "channel": "whatsapp",
+    "emailResult": {
+      "success": true,
+      "status": "logged_ready_for_credentials"
+    },
+    "whatsappResult": {
+      "success": true,
+      "status": "logged_ready_for_gateway"
+    }
+  },
+  {
+    "orderId": "AE-3825",
+    "timestamp": "2026-11-10T05:56:21.040Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Ayesha Khan",
+      "phone": "0300 1234567",
+      "email": "ayesha.test@example.com",
+      "address": "House 42, Street 7, F-11/2, Islamabad"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "size": "200 ml",
+        "price": 1200,
+        "quantity": 1
+      },
+      {
+        "id": "frizz-guard",
+        "name": "Frizz Guard Hair Spray",
+        "size": "100 ml",
+        "price": 300,
+        "quantity": 1
+      }
+    ],
+    "subtotal": 1500,
+    "shipping": 0,
+    "total": 1500,
+    "channel": "both",
+    "emailResult": {
+      "success": true,
+      "status": "logged_ready_for_credentials"
+    },
+    "whatsappResult": {
+      "success": true,
+      "status": "logged_ready_for_gateway"
+    }
+  },
+  {
+    "orderId": "AE-4405",
+    "timestamp": "2026-11-10T04:34:58.964Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Azlan Ahmad khan",
+      "phone": "03135074177",
+      "email": "ahmadazlankhan@gmail.com",
+      "address": "Mohalla Badam Bagicha Thana Malakand Khyber Pukhtoon Khwa"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "subtitle": "200 ml",
+        "price": 1200,
+        "quantity": 1,
+        "size": "200 ml",
+        "type": "oil"
+      }
+    ],
+    "subtotal": 1200,
+    "shipping": 200,
+    "total": 1400
+  },
+  {
+    "orderId": "AE-4680",
+    "timestamp": "2026-11-10T04:32:19.211Z",
+    "status": "Confirmed",
+    "paymentMethod": "Cash on Delivery",
+    "customer": {
+      "name": "Fatima Ali",
+      "phone": "0341 0701948",
+      "email": "fatima@example.com",
+      "address": "Street 5, Phase 4, Bahria Town, Islamabad"
+    },
+    "items": [
+      {
+        "id": "growth-potion",
+        "name": "Growth Potion Hair Oil",
+        "size": "200 ml",
+        "price": 1200,
+        "quantity": 1
+      }
+    ],
+    "subtotal": 1200,
+    "shipping": 200,
+    "total": 1400
+  }
+]
