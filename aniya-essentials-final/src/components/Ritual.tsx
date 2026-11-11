@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BottleVisual from "./BottleVisual";
@@ -9,6 +10,7 @@ import { BRAND_CONFIG, getWhatsAppUrl } from "@/config/brand";
 import { ShoppingBag, MessageCircle, Check } from "lucide-react";
 
 export default function Ritual() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<0 | 1>(0);
   const { addItem, openCart } = useCart();
 
@@ -98,9 +100,9 @@ export default function Ritual() {
     });
   };
 
-  const handleWhatsApp = () => {
+  const handleOrderNow = () => {
     handleAddToCart();
-    openCart();
+    router.push("/checkout");
   };
 
   return (
@@ -228,7 +230,7 @@ export default function Ritual() {
                   Add to Cart
                 </button>
                 <button
-                  onClick={handleWhatsApp}
+                  onClick={handleOrderNow}
                   className="px-6 py-2.5 rounded-full border border-current hover:bg-black/10 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   Order Now

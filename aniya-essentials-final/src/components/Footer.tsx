@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowRight, Check, Phone, Mail } from "lucide-react";
+import { ArrowRight, Check, Phone, Mail, Truck } from "lucide-react";
 import { BRAND_CONFIG, getWhatsAppUrl } from "@/config/brand";
 
 export default function Footer() {
@@ -110,6 +110,15 @@ export default function Footer() {
                 >
                   <Phone className="w-3.5 h-3.5 text-[#ae5d2e]" />
                   Helpline: {BRAND_CONFIG.contactPhone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/track"
+                  className="hover:text-[#f6f2e9] transition-colors inline-flex items-center gap-1.5 text-[#f6f2e9] font-medium"
+                >
+                  <Truck className="w-3.5 h-3.5 text-[#ae5d2e]" />
+                  Track Parcel (TCS Live Tracking)
                 </a>
               </li>
               <li>

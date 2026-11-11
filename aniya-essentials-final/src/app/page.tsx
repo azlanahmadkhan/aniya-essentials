@@ -15,9 +15,8 @@ import CartDrawer from "@/components/CartDrawer";
 
 export default function Home() {
   return (
-    <CartProvider>
-      <SmoothScroll>
-        <div className="relative min-h-screen bg-[#182b1d] text-[#f6f2e9] selection:bg-[#ae5d2e] selection:text-white">
+    <SmoothScroll>
+      <div className="relative min-h-screen bg-[#182b1d] text-[#f6f2e9] selection:bg-[#ae5d2e] selection:text-white">
           {/* Navigation Bar */}
           <Navbar />
 
@@ -44,10 +43,9 @@ export default function Home() {
           {/* Scene 6: Botanical Editorial Footer */}
           <Footer />
 
-          {/* Interactive Shopping Bag / WhatsApp Order Drawer */}
+          {/* Interactive Shopping Bag */}
           <CartDrawer />
         </div>
       </SmoothScroll>
-    </CartProvider>
   );
 }

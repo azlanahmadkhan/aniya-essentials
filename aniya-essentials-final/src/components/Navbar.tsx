@@ -19,10 +19,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Our Products", href: "#products" },
-    { name: "Reviews", href: "#reviews" },
-    { name: "About Us", href: "#about" },
-    { name: "How to Use", href: "#how-to-use" },
+    { name: "Our Products", href: "/#products" },
+    { name: "Track Order", href: "/track" },
+    { name: "Reviews", href: "/#reviews" },
+    { name: "About Us", href: "/#about" },
+    { name: "How to Use", href: "/#how-to-use" },
   ];
 
   return (

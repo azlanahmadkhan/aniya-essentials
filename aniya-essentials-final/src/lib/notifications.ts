@@ -11,6 +11,13 @@ export interface OrderItem {
 export interface OrderData {
   orderId: string;
   timestamp: string;
+  paymentMethod?: string;
+  paymentReference?: string;
+  senderName?: string;
+  receiptImage?: string;
+  courier?: string;
+  trackingNumber?: string;
+  city?: string;
   customer: {
     name: string;
     phone: string;
@@ -25,10 +32,9 @@ export interface OrderData {
 }
 
 /**
- * DIRECT EMAIL API NOTIFICATION
- * Dispatches order details to aniyaessentials@gmail.com.
- * Uses FormSubmit.co HTTP Gateway (100% free, no password required)
- * and falls back to Gmail SMTP if GMAIL_APP_PASSWORD is provided.
+ * DIRECT EMAIL NOTIFICATION
+ * Dispatches order details to aniyaessentials@gmail.com via FormSubmit.co
+ * and falls back to Gmail SMTP if configured.
  */
 export async function sendEmailNotification(order: OrderData): Promise<{
   success: boolean;
@@ -48,9 +54,23 @@ export async function sendEmailNotification(order: OrderData): Promise<{
     )
     .join("\n");
 
+  const paymentInfo = order.paymentMethod || "Cash on Delivery (COD)";
+  const isBankOrWallet =
+    paymentInfo.includes("Bank") ||
+    paymentInfo.includes("UBL") ||
+    paymentInfo.includes("Easypaisa") ||
+    paymentInfo.includes("JazzCash");
+
+  const refDetails = [
+    order.paymentReference ? `Transaction ID (TID): ${order.paymentReference}` : "",
+    order.senderName ? `Sender Account / Name: ${order.senderName}` : "",
+  ]
+    .filter(Boolean)
+    .join(" | ");
+
   let formSubmitSent = false;
 
-  // 1. Send via FormSubmit HTTP Gateway directly to aniyaessentials@gmail.com (No password needed!)
+  // 1. Send via FormSubmit HTTP Gateway directly to aniyaessentials@gmail.com
   try {
     const fsRes = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
       method: "POST",
@@ -61,18 +81,25 @@ export async function sendEmailNotification(order: OrderData): Promise<{
         Origin: "http://localhost:3000",
       },
       body: JSON.stringify({
-        _subject: `New Order #${order.orderId} from ${order.customer.name} (PKR ${order.total.toLocaleString()})`,
+        _subject: isBankOrWallet
+          ? `🚨 [DIRECT BANK/WALLET PAYMENT] New Order #${order.orderId} from ${order.customer.name} (PKR ${order.total.toLocaleString()})`
+          : `📦 [COD ORDER] New Order #${order.orderId} from ${order.customer.name} (PKR ${order.total.toLocaleString()})`,
         _template: "table",
         "Order ID": `#${order.orderId}`,
-        "Order Date": new Date(order.timestamp).toLocaleString("en-PK", { timeZone: "Asia/Karachi" }),
+        "Courier Service": `${order.courier || "TCS Express"} (CN: ${order.trackingNumber || "Pending"})`,
+        "Payment Method": paymentInfo,
+        "Transaction / Sender Details": refDetails || "Cash on Delivery (Pay at Doorstep)",
         "Customer Name": order.customer.name,
         "Customer Phone": order.customer.phone,
-        "Customer Address": order.customer.address,
+        "Customer Delivery Address": order.customer.address,
         "Customer Email": order.customer.email || "Not provided",
         "Items Ordered": itemsText,
         "Subtotal": `PKR ${order.subtotal.toLocaleString()}`,
         "Delivery Fee": order.shipping === 0 ? "FREE" : `PKR ${order.shipping.toLocaleString()}`,
-        "Total Payable": `PKR ${order.total.toLocaleString()} (Cash on Delivery)`,
+        "Total Payable": `PKR ${order.total.toLocaleString()}`,
+        "Verification Note": isBankOrWallet
+          ? "Customer chose Direct Payment. Check your UBL / Mobile account for this Transaction ID / Sender Name before dispatching."
+          : "Collect Cash on Delivery upon parcel delivery.",
       }),
     });
 
@@ -98,119 +125,64 @@ export async function sendEmailNotification(order: OrderData): Promise<{
       });
 
       const emailHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #d5ddc9;">
-          <div style="background: #182b1d; padding: 24px; text-align: center; color: #f6f2e9;">
-            <h1 style="margin: 0; font-size: 22px; letter-spacing: 0.15em;">ANIYA ESSENTIALS</h1>
-            <p style="margin: 4px 0 0 0; color: #aab79a; font-size: 11px; letter-spacing: 0.2em;">NEW ORDER #${order.orderId}</p>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #faf8f5; border: 1px solid #e5ded3; border-radius: 12px; color: #182b1d;">
+          <div style="text-align: center; padding-bottom: 20px; border-bottom: 1.5px solid #ae5d2e;">
+            <h1 style="margin: 0; color: #182b1d; font-size: 26px; letter-spacing: 2px;">ANIYA ESSENTIALS</h1>
+            <p style="margin: 4px 0 0; color: #ae5d2e; font-size: 13px; text-transform: uppercase; letter-spacing: 3px;">
+              ${isBankOrWallet ? "Advance Payment Order" : "New Customer Order"}
+            </p>
           </div>
-          <div style="padding: 24px; color: #182b1d;">
-            <p><strong>Customer:</strong> ${order.customer.name}</p>
-            <p><strong>Phone:</strong> <a href="tel:${order.customer.phone}">${order.customer.phone}</a></p>
-            <p><strong>Address:</strong> ${order.customer.address}</p>
-            <p><strong>Email:</strong> ${order.customer.email || "N/A"}</p>
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 16px 0;" />
-            <h3 style="margin-bottom: 8px;">Items Ordered:</h3>
-            <pre style="font-family: inherit; background: #f6f2e9; padding: 12px; border-radius: 6px;">${itemsText}</pre>
-            <p style="font-size: 16px; font-weight: bold; color: #ae5d2e;">Total: PKR ${order.total.toLocaleString()} (Cash on Delivery)</p>
+
+          <div style="margin-top: 20px; background-color: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #e5ded3;">
+            <h2 style="margin: 0 0 12px; font-size: 18px; color: #182b1d;">Order #${order.orderId}</h2>
+            <p style="margin: 4px 0; font-size: 14px;"><strong>Payment Method:</strong> ${paymentInfo}</p>
+            ${refDetails ? `<p style="margin: 4px 0; font-size: 14px; color: #ae5d2e;"><strong>Verification Info:</strong> ${refDetails}</p>` : ""}
+            <p style="margin: 4px 0; font-size: 14px;"><strong>Courier Partner:</strong> ${order.courier || "TCS Express"} (Tracking: ${order.trackingNumber || "Pending"})</p>
+            <p style="margin: 4px 0; font-size: 14px;"><strong>Customer:</strong> ${order.customer.name}</p>
+            <p style="margin: 4px 0; font-size: 14px;"><strong>Phone:</strong> <a href="tel:${order.customer.phone}" style="color: #ae5d2e;">${order.customer.phone}</a></p>
+            <p style="margin: 4px 0; font-size: 14px;"><strong>Address:</strong> ${order.customer.address}</p>
+          </div>
+
+          <div style="margin-top: 20px; background-color: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #e5ded3;">
+            <h3 style="margin: 0 0 12px; font-size: 15px; color: #182b1d; text-transform: uppercase; letter-spacing: 1px;">Items Ordered</h3>
+            <pre style="white-space: pre-wrap; font-family: inherit; font-size: 14px; color: #35452e; line-height: 1.6; margin: 0;">${itemsText}</pre>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 16px 0;" />
+            <table style="width: 100%; font-size: 14px;">
+              <tr>
+                <td>Subtotal</td>
+                <td style="text-align: right;">PKR ${order.subtotal.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Shipping</td>
+                <td style="text-align: right;">${order.shipping === 0 ? "FREE" : `PKR ${order.shipping.toLocaleString()}`}</td>
+              </tr>
+              <tr style="font-size: 16px; font-weight: bold; color: #ae5d2e;">
+                <td style="padding-top: 8px;">Total Payable</td>
+                <td style="text-align: right; padding-top: 8px;">PKR ${order.total.toLocaleString()}</td>
+              </tr>
+            </table>
           </div>
         </div>
       `;
 
       await transporter.sendMail({
-        from: `"Aniya Essentials Orders" <${user.trim()}>`,
+        from: `"Aniya Essentials Orders" <${user}>`,
         to: recipientEmail,
-        subject: `New Order #${order.orderId} from ${order.customer.name} (PKR ${order.total.toLocaleString()})`,
-        text: `New Order #${order.orderId}\nCustomer: ${order.customer.name}\nPhone: ${order.customer.phone}\nAddress: ${order.customer.address}\n\nItems:\n${itemsText}\n\nTotal: PKR ${order.total.toLocaleString()}`,
+        subject: `New Order #${order.orderId} from ${order.customer.name} (PKR ${order.total.toLocaleString()}) - ${paymentInfo}`,
+        text: `New Order #${order.orderId}\nCustomer: ${order.customer.name} (${order.customer.phone})\nAddress: ${order.customer.address}\nPayment: ${paymentInfo}\n${refDetails}\nTotal: PKR ${order.total.toLocaleString()}\n\nItems:\n${itemsText}`,
         html: emailHtml,
       });
 
-      console.log(`[Email API] Sent order email via Gmail SMTP to ${recipientEmail}`);
-      return { success: true, status: "sent_via_gmail_smtp" };
-    } catch (err: any) {
-      console.error("[Email API] SMTP error:", err.message);
+      return { success: true, status: "Sent via Gmail SMTP" };
+    } catch (smtpErr: any) {
+      console.error("[Email API] SMTP Error:", smtpErr.message);
+      return formSubmitSent
+        ? { success: true, status: "Sent via FormSubmit Gateway" }
+        : { success: false, status: "Failed", error: smtpErr.message };
     }
   }
 
-  if (formSubmitSent) {
-    return { success: true, status: "sent_via_formsubmit" };
-  }
-
-  return { success: true, status: "logged_ready_for_credentials" };
-}
-
-/**
- * DIRECT WHATSAPP NOTIFICATION HELPER
- * Owner Phone: +92 313 5074177
- */
-export async function sendWhatsAppNotification(order: OrderData): Promise<{
-  success: boolean;
-  status: string;
-  error?: string;
-}> {
-  const ownerPhone = process.env.WHATSAPP_OWNER_NUMBER || "923135074177";
-  const itemsText = order.items
-    .map(
-      (item) =>
-        `  • ${item.quantity}x ${item.name} (${item.size}) - PKR ${(
-          item.price * item.quantity
-        ).toLocaleString()}`
-    )
-    .join("\n");
-
-  const messageText = 
-    `*NEW ORDER RECEIVED — ANIYA ESSENTIALS*\n` +
-    `--------------------------------------\n` +
-    `*Order ID:* #${order.orderId}\n` +
-    `*Customer:* ${order.customer.name}\n` +
-    `*Phone:* ${order.customer.phone}\n` +
-    `*Address:* ${order.customer.address}\n` +
-    `*Email:* ${order.customer.email || "Not provided"}\n\n` +
-    `*Items Ordered:*\n${itemsText}\n\n` +
-    `*Subtotal:* PKR ${order.subtotal.toLocaleString()}\n` +
-    `*Delivery:* ${order.shipping === 0 ? "FREE" : `PKR ${order.shipping.toLocaleString()}`}\n` +
-    `*Total Payable:* PKR ${order.total.toLocaleString()} (Cash on Delivery)\n` +
-    `--------------------------------------\n` +
-    `Reply to customer: https://wa.me/${order.customer.phone.replace(/[^0-9]/g, "")}`;
-
-  // CallMeBot API (free WhatsApp gateway)
-  const callMeBotApiKey = process.env.CALLMEBOT_API_KEY;
-  if (callMeBotApiKey) {
-    try {
-      const url = `https://api.callmebot.com/whatsapp.php?phone=${ownerPhone}&text=${encodeURIComponent(
-        messageText
-      )}&apikey=${callMeBotApiKey}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        console.log(`[WhatsApp API] Order #${order.orderId} delivered to ${ownerPhone} via CallMeBot`);
-        return { success: true, status: "sent_via_callmebot" };
-      }
-    } catch (err: any) {
-      console.error("[WhatsApp API] CallMeBot error:", err.message);
-    }
-  }
-
-  // Webhook Gateway (optional)
-  const webhookUrl = process.env.WHATSAPP_WEBHOOK_URL;
-  if (webhookUrl) {
-    try {
-      const res = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: ownerPhone,
-          message: messageText,
-          orderId: order.orderId,
-          order,
-        }),
-      });
-      if (res.ok) {
-        return { success: true, status: "sent_via_webhook" };
-      }
-    } catch (err: any) {
-      console.error("[WhatsApp API] Webhook error:", err.message);
-    }
-  }
-
-  console.log(`[WhatsApp API] Message ready for ${ownerPhone}`);
-  return { success: true, status: "logged_ready_for_gateway" };
+  return formSubmitSent
+    ? { success: true, status: "Sent via FormSubmit Gateway" }
+    : { success: false, status: "Failed to dispatch email" };
 }

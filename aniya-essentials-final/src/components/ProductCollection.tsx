@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useCart } from "@/context/CartContext";
@@ -21,6 +22,7 @@ interface Product {
 }
 
 export default function ProductCollection() {
+  const router = useRouter();
   const { addItem, openCart } = useCart();
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,7 @@ export default function ProductCollection() {
       },
       qty
     );
-    openCart();
+    router.push("/checkout");
   };
 
   useEffect(() => {

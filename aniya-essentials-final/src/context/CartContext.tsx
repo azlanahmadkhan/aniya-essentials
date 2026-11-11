@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface CartItem {
   id: string;
@@ -27,20 +27,50 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const DEFAULT_ITEMS: CartItem[] = [
+  {
+    id: "growth-potion",
+    name: "Growth Potion Hair Oil",
+    subtitle: "200 ml",
+    price: 1200,
+    quantity: 1,
+    size: "200 ml",
+    type: "oil",
+  },
+];
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  // Initialized with Growth Potion Hair Oil (PKR 1,200 / 200 ml)
-  const [items, setItems] = useState<CartItem[]>([
-    {
-      id: "growth-potion",
-      name: "Growth Potion Hair Oil",
-      subtitle: "200 ml",
-      price: 1200,
-      quantity: 1,
-      size: "200 ml",
-      type: "oil",
-    },
-  ]);
+  const [items, setItems] = useState<CartItem[]>(DEFAULT_ITEMS);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("aniya_cart");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (isLoaded) {
+      try {
+        localStorage.setItem("aniya_cart", JSON.stringify(items));
+      } catch {
+        // ignore
+      }
+    }
+  }, [items, isLoaded]);
 
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
